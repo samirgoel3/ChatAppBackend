@@ -1,7 +1,6 @@
 const ResponseHandler = require('../../../utils/response-handlers')
 const Endpoint = require('../../../utils/constants/Endpointers')
 const UserModel = require('../../../models/model.user')
-const AlgorithmModel = require('../../../models/model.algorithm')
 const {failureResponse, exceptionResponse, successResponse} = require("../../../utils/response-handlers");
 const JWT  = require('jsonwebtoken')
 const Config  = require('../../../config/env_config/config')
@@ -92,35 +91,10 @@ resetPassword = async (req, res)=>{
     }
 }
 
-listFavouriteAlgorithms = async (req, res)=>{
-    try{
-        let id = mongoose.Types.ObjectId(req.user_id);
-        let favourite_Algo = await UserModel.aggregate([
-            {$match:{_id:id}},
-            {$addFields:{required_value:"$favourite_Algo.value"}},
-            {$project:{required_value:1}}
-        ])
-        if(favourite_Algo[0].hasOwnProperty("required_value")){
-            let algorithms = await AlgorithmModel.find({_id:{$in:favourite_Algo[0].required_value}}).select('_id category_id level problem')
-            if(algorithms){
-                successResponse(""+Endpoint.LIST_FAVOURITE.endpoint,"Algorithm found successfully", algorithms, 200, req, res)
-            }
-            else{
-                failureResponse(""+Endpoint.LIST_FAVOURITE.endpoint,"No Algorithm", [], 200, req, res)
-            }
-        }
-        else{
-            failureResponse(""+Endpoint.LIST_FAVOURITE.endpoint,"No favourite algorithm found for this user", [], 200, req, res)
-        }
-
-    }catch (e){
-        return exceptionResponse(""+Endpoint.LIST_FAVOURITE.endpoint,"Exception Occurs", ""+e.message,200, req, res)
-    }
-}
 
 
 
 
 
 
-module.exports = {create, login, verifyEmail, resetPassword, listFavouriteAlgorithms}
+module.exports = {create, login, verifyEmail, resetPassword}

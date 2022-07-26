@@ -14,8 +14,7 @@ module.exports = function () {
         serverApp.set('hostname', config.app.hostname);
         serverApp.set('port', config.app.port);
 
-        serverApp.set('hostname', 'localhost');
-        serverApp.set('port', process.env.PORT||3000);
+        
 
         // CORS
         serverApp.options('*', cors());
@@ -40,6 +39,7 @@ module.exports = function () {
         })
             .then((res) => {console.log('#####---> Mongo DB Connected!');})
             .catch(err => {console.log("####----> Mongo Db not Connected" + err);});
+
 
         route.init(serverApp)
        

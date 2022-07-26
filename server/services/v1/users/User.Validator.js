@@ -24,7 +24,7 @@ const validateEmail = ()=>{
 const validateResetPassword = ()=>{
     return[
         body(Constants.PostingParams.PASSWORD).isLength({min:6}),
-        body(Constants.PostingParams.RESET_TOKEN).isLength({min:55}),
+        body(Constants.PostingParams.RESET_TOKEN).isLength({min:105}),
     ]
 }
 
