@@ -2,10 +2,28 @@
   "name": "chatapp",
   "version": "1.0.0",
   "description": "sample chat app backend application",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "production": "node server.js",
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "author": "Samir goel",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "date-and-time": "^2.3.1",
+    "express": "^4.18.1",
+    "express-validator": "^6.14.1",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "mongodb": "^4.7.0",
+    "mongoose": "^6.3.8",
+    "multer": "^1.4.5-lts.1"
+  }
 }
