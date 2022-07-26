@@ -50,7 +50,4 @@ const throwValidationErrorResponse = async (req, res, next)=>{
 }
 
 
-
-
-
 module.exports = { successResponse, failureResponse, exceptionResponse, throwValidationErrorResponse}
