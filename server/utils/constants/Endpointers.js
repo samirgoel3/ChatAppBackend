@@ -39,5 +39,15 @@ module.exports = {
         platform_type:"Mobile App",
         url:Config.app.base_url+"api/"+Config.app.api_version+"/user/reset-password",
         description: "This api is user for email exist in DB or not"
+    },
+    CREATE_GROUP:{
+        name: "Create Group",
+        endpoint:"/create-group",
+        posting_script: false,
+        response: false,
+        request_type:"POST",
+        platform_type:"Mobile App",
+        url:Config.app.base_url+"api/"+Config.app.api_version+"/user/create-group",
+        description: "This api is user for creating group for chatting"
     }
 }

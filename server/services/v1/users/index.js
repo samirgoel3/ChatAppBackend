@@ -51,7 +51,7 @@ create = async (req, res) => {
             if (response.data.result === 1) { userImage = "" + response.data.response.url; }
             else { userImage = "https://cdn-icons-png.flaticon.com/512/1277/1277612.png"; }
         }
-        else { userImage = "https://ui-avatars.com/api/?name="+req.body.username.replace(" ","") ; } // save abstract image from fake api 
+        else { userImage = "https://ui-avatars.com/api/?name=" + req.body.username.replace(" ", ""); } // save abstract image from fake api 
 
 
         let createdUser = await UserModel.create({
@@ -86,13 +86,17 @@ create = async (req, res) => {
 
 login = async (req, res) => {
     try {
-        let loggedInUser = await UserModel.findOne({ email: req.body.email, password: req.body.password }).select('-__v -password -date -favourite_Algo -createdAt -updatedAt')
+        let loggedInUser = await UserModel.findOne({ email: req.body.email, password: req.body.password }).select('-__v -password -date -createdAt -updatedAt')
         // user not exist in DB
         if (!loggedInUser)
             return failureResponse("" + Endpoint.LOGIN_USER.name, "User does not exist ", [], 200, req, res)
 
 
+
         let token = await JWT.sign({ user_id: loggedInUser._id }, Config.app.app_secret);
+
+        // update token in DB corresponding to that user
+        await UserModel.updateOne({email:req.body.email}, {token:token})
         loggedInUser['token'] = token;
 
         return successResponse("" + Endpoint.LOGIN_USER.name, "User Logged in successfully", loggedInUser, 200, req, res)
@@ -132,9 +136,13 @@ resetPassword = async (req, res) => {
 }
 
 
+createGroup = async (req, res)=>{
+    try{
+        res.send('Group Creation logic will goes here.')
+    }catch(e){}
+}
 
 
 
 
-
-module.exports = { create, login, verifyEmail, resetPassword }
+module.exports = { create, login, verifyEmail, resetPassword, createGroup }
