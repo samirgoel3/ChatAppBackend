@@ -1,4 +1,5 @@
 const express = require('express');
+const fileUpload = require('express-fileupload')
 const route= require('./routes')
 const config = require('./config/env_config/config')
 const bodyParser = require('body-parser')
@@ -14,6 +15,8 @@ module.exports = function () {
         serverApp.set('hostname', config.app.hostname);
         serverApp.set('port', config.app.port);
 
+        // For Retreving files in request
+        serverApp.use(fileUpload())
         
 
         // CORS
@@ -41,6 +44,7 @@ module.exports = function () {
             .catch(err => {console.log("####----> Mongo Db not Connected" + err);});
 
 
+            
         route.init(serverApp)
        
 
