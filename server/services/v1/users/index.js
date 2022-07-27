@@ -51,7 +51,7 @@ create = async (req, res) => {
             if (response.data.result === 1) { userImage = "" + response.data.response.url; }
             else { userImage = "https://cdn-icons-png.flaticon.com/512/1277/1277612.png"; }
         }
-        else { userImage = "" + faker.image.abstract(); } // save abstract image from fake api 
+        else { userImage = "https://ui-avatars.com/api/?name="+req.body.username.replace(" ","") ; } // save abstract image from fake api 
 
 
         let createdUser = await UserModel.create({
