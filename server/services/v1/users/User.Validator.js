@@ -3,8 +3,10 @@ const Constants = require('../../../utils/constants')
 
 const validateCreateUser = ()=>{
     return [
+        body(Constants.PostingParams.USERNAME).exists({checkNull:true, checkFalsy:true}).withMessage("Value missing").isLength({min:5}).withMessage("Minimum length should be 5"),
         body(Constants.PostingParams.EMAIL).isEmail(),
-        body(Constants.PostingParams.PASSWORD).isLength({ min: 6 })
+        body(Constants.PostingParams.PASSWORD).isLength({ min: 6 }),
+        body(Constants.PostingParams.DEVELOPER).isBoolean()
     ]
 }
 

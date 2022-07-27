@@ -4,7 +4,8 @@ const UserModel = require('../../../models/model.user')
 const {failureResponse, exceptionResponse, successResponse} = require("../../../utils/response-handlers");
 const JWT  = require('jsonwebtoken')
 const Config  = require('../../../config/env_config/config')
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const { faker } = require('@faker-js/faker');
 
 create = async (req, res)=>{
     try{
@@ -17,10 +18,11 @@ create = async (req, res)=>{
 
 
         let createdUser = await UserModel.create({
-            username: req.body.email,
+            username: req.body.username,
             email: req.body.email,
             password: req.body.password,
-            image: "some base 64 string goes here accordingly.",
+            image: ""+faker.image.abstract(),
+            developer:req.body.developer
         });
 
 
@@ -31,7 +33,8 @@ create = async (req, res)=>{
         let ObjectToReturn = {
             username: createdUser.username,
             email: createdUser.email,
-            image: "some base 64 string goes here accordingly.",
+            image: createdUser.image,
+            developer:createdUser.developer,
             token:createdUser.token
         }
 
