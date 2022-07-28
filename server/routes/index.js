@@ -1,14 +1,15 @@
 const apiRoutes = require('./apis');
+const {Server} = require("socket.io");
 
 
-const init = (server) => {
+const initApi = (server) => {
 
     server.use('*', (req, res, next) => {
-        console.log('Request was made to : ' + req.method + " -> " + req.originalUrl+ '\n*******************');
+        console.log('Request was made to : ' + req.method + " -> " + req.originalUrl + '\n*******************');
         next();
     });
 
-    server.get('/', (req, res)=>{
+    server.get('/', (req, res) => {
         res.send('Algo Network site is working')
     })
 
@@ -17,8 +18,22 @@ const init = (server) => {
 };
 
 
+const initSocket = (server) => {
+    const io = new Server(server, {
+        // options
+      });
+
+    console.log('#####---> Making Connection for Socket')
+    io.on('connection', (socket) => {
+        console.log('a user connected');
+    });
+}
+
+
+
 
 
 module.exports = {
-    init: init
+    initApi: initApi,
+    initSocket: initSocket
 };

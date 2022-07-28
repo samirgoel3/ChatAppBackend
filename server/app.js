@@ -1,6 +1,7 @@
 const express = require('express');
+const http = require('http');
 const fileUpload = require('express-fileupload')
-const route= require('./routes')
+const route = require('./routes')
 const config = require('./config/env_config/config')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
@@ -9,19 +10,19 @@ const { ServerApiVersion } = require('mongodb');
 
 
 module.exports = function () {
-    let serverApp =  express(), create, start;
+    let ApiServerApp = express(), mainServer, create, start;
 
     create = () => {
-        serverApp.set('hostname', config.app.hostname);
-        serverApp.set('port', config.app.port);
+        ApiServerApp.set('hostname', config.app.hostname);
+        ApiServerApp.set('port', config.app.port);
 
         // For Retreving files in request
-        serverApp.use(fileUpload())
-        
+        ApiServerApp.use(fileUpload())
+
 
         // CORS
-        serverApp.options('*', cors());
-        serverApp.use(function (req, res, next) {
+        ApiServerApp.options('*', cors());
+        ApiServerApp.use(function (req, res, next) {
             res.header("Access-Control-Allow-Origin", "*");
             res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
             res.header("Access-Control-Allow-Headers", "Origin, x-access-token, Content-Type, Accept");
@@ -29,43 +30,42 @@ module.exports = function () {
         });
 
         // Middleware
-        serverApp.use(bodyParser.json({limit: '50mb', extended: true}));
-        serverApp.use(bodyParser.urlencoded({extended: false}));
+        ApiServerApp.use(bodyParser.json({ limit: '50mb', extended: true }));
+        ApiServerApp.use(bodyParser.urlencoded({ extended: false }));
 
 
         mongoose.connect(config.db.server_one, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            serverApi:ServerApiVersion.v1,
-            dbName:'App-Database' ,
+            serverApi: ServerApiVersion.v1,
+            dbName: 'App-Database',
             autoIndex: true,
         })
-            .then((res) => {console.log('#####---> Mongo DB Connected!');})
-            .catch(err => {console.log("####----> Mongo Db not Connected" + err);});
+            .then((res) => { console.log('#####---> Mongo DB Connected!'); })
+            .catch(err => { console.log("####----> Mongo Db not Connected" + err); });
 
+        route.initApi(ApiServerApp)
+        mainServer = http.createServer(ApiServerApp)
+        route.initSocket(mainServer)
 
-            
-        route.init(serverApp)
-       
-
+    
     };
 
 
     start = () => {
         create();
-        let hostname = serverApp.get("hostname"),
-            port = serverApp.get("port");
+        let hostname = ApiServerApp.get("hostname"),
+            port = ApiServerApp.get("port");
 
-        serverApp.listen(port, () => {
-            console.log(
-                "Express Server is listening on - https://" + hostname + ":" + port
-            );
+
+
+        mainServer.listen(port, () => {
+            console.log("#####---> Express Server is listening on - https://" + hostname + ":" + port);
         });
     };
 
-
     return {
-        create,start
+        create, start
     };
 
 };
