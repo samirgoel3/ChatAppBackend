@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const fileUpload = require('express-fileupload')
 const route = require('./routes')
+const socketRoute = require('./routes/socket')
 const config = require('./config/env_config/config')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
@@ -41,14 +42,14 @@ module.exports = function () {
             dbName: 'App-Database',
             autoIndex: true,
         })
-            .then((res) => { console.log('#####---> Mongo DB Connected!'); })
+            .then((res) => {  console.log('#####---> Mongo DB Connected!'); })
             .catch(err => { console.log("####----> Mongo Db not Connected" + err); });
 
         route.initApi(ApiServerApp)
         mainServer = http.createServer(ApiServerApp)
-        route.initSocket(mainServer)
+        socketRoute.initSocket(mainServer)
 
-    
+
     };
 
 
@@ -56,7 +57,6 @@ module.exports = function () {
         create();
         let hostname = ApiServerApp.get("hostname"),
             port = ApiServerApp.get("port");
-
 
 
         mainServer.listen(port, () => {
@@ -67,5 +67,4 @@ module.exports = function () {
     return {
         create, start
     };
-
 };

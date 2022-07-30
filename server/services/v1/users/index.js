@@ -136,13 +136,8 @@ resetPassword = async (req, res) => {
 }
 
 
-createGroup = async (req, res)=>{
-    try{
-        res.send('Group Creation logic will goes here.')
-    }catch(e){}
-}
 
 
 
 
-module.exports = { create, login, verifyEmail, resetPassword, createGroup }
+module.exports = { create, login, verifyEmail, resetPassword }

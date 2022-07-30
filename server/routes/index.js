@@ -1,5 +1,4 @@
 const apiRoutes = require('./apis');
-const {Server} = require("socket.io");
 
 
 const initApi = (server) => {
@@ -10,7 +9,7 @@ const initApi = (server) => {
     });
 
     server.get('/', (req, res) => {
-        res.send('Algo Network site is working')
+        res.send(' Chat-app Backend is working')
     })
 
     server.use('/api', apiRoutes);
@@ -18,22 +17,6 @@ const initApi = (server) => {
 };
 
 
-const initSocket = (server) => {
-    const io = new Server(server, {
-        // options
-      });
-
-    console.log('#####---> Making Connection for Socket')
-    io.on('connection', (socket) => {
-        console.log('a user connected');
-    });
-}
-
-
-
-
-
 module.exports = {
     initApi: initApi,
-    initSocket: initSocket
 };

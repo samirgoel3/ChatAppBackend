@@ -19,8 +19,6 @@ const {authenticateClientToken} = require('../../middlewares/authGaurd')
 
     router.post(Constants.EndPoints.RESET_PASSWORD.endpoint, UserValidator.validateResetPassword(), throwValidationErrorResponse , UserService.resetPassword);
 
-    router.post(Constants.EndPoints.CREATE_GROUP.endpoint, authenticateClientToken, UserService.createGroup);
-
 
 
 module.exports = router;
