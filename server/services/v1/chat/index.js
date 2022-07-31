@@ -13,9 +13,14 @@ createOneToOneChat = async (req, res) => {
         const result = await ModelChat.updateOne(
             {groupadmin}, // find group admin exist or not
             {chatname, users,groupadmin },
-            { upsert: true } // Make this update into an upsert
+            { upsert: true, new:true }, // Make this update into an upsert
           );
-        ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"Chat created/updated successfully",result, 200, req, res);
+          if(result.modifiedCount == 0 ){
+            ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"Chat room was created successfully",{chat_id:result.upsertedId}, 200, req, res);
+          }else{
+            let CHATID = await ModelChat.find({groupadmin:groupadmin}).select('_id')
+            ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"Chat room was already exist so updated successfully",{chat_id:CHATID[0]._id}, 200, req, res);
+          }
         
     } catch (e) {
         ResponseHandler.exceptionResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name, "Exception Occurs ---->>>", e.message, 200, req, res)
@@ -95,7 +100,7 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
                 else{
                     OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.chatname, messages:[{content:el.content, sender:el.sender}]})
                 }
-                 }
+            }
         })
 
 
@@ -103,9 +108,11 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
             group_chat:GroupChats,
             one_to_one_chat:OneToOneChats
         }
-
-
-        ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Finding messages in chat  "+chats,dataToSend,200, req, res);
+        if(GroupChats.length == 0 && OneToOneChats.length == 0 ){
+            ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "No Unread Messages Found",[],200, req, res);
+        }else{
+            ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Messages found as unread ",dataToSend,200, req, res);
+        }
     }catch(e){
         ResponseHandler.exceptionResponse("" + Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Exception Occurs ---->>>", e.message, 200, req, res)
     }
