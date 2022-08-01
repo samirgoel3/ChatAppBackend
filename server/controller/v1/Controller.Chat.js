@@ -10,13 +10,13 @@ const ChatService = require('../../services/v1/chat')
 router.post(Constants.EndPoints.CREATE_ONE_ONE_CHAT.endpoint,
     authenticateClientToken,
     ChatValidator.validateOneToOneChatCreation(),
-    throwValidationErrorResponse ,
+    throwValidationErrorResponse,
     ChatService.createOneToOneChat);
 
 router.post(Constants.EndPoints.CREATE_GROUP_CHAT.endpoint,
     authenticateClientToken,
     ChatValidator.validateCreateGroupChat(),
-    throwValidationErrorResponse ,
+    throwValidationErrorResponse,
     ChatService.createChatGroup);
 
 router.get(Constants.EndPoints.GET_GROUP_CHAT_BY_USER_ID.endpoint,
@@ -27,12 +27,15 @@ router.get(Constants.EndPoints.GET_GROUP_CHAT_BY_USER_ID.endpoint,
 router.post(Constants.EndPoints.EDIT_GROUP_CHAT.endpoint,
     authenticateClientToken,
     ChatValidator.validateEditGroupChat(),
-    throwValidationErrorResponse ,
+    throwValidationErrorResponse,
     ChatService.editChatGroup);
 
 
 router.get(Constants.EndPoints.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.endpoint,
     ChatService.getAllChatsWithUnreadMessages);
+
+router.get(Constants.EndPoints.GET_ALL_CHATS_WITH_READ_MESSAGE.endpoint,
+    ChatService.getAllChatsWithReadMessages);
 
 
 

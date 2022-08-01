@@ -5,9 +5,8 @@ const ModelMessages = require('../../../models/model.message')
 
 create = async (req, res) => {
     try {
-        let { sender, content, chat } = req.body
-
-        let result = await ModelMessages.create({ sender, content, chat, readby: [req.body.sender] })
+        let { content, chat } = req.body
+        let result = await ModelMessages.create({ sender:req.user_id, content, chat, readby: [req.user_id] })
 
         if (result) {
             ResponseHandler.successResponse("" + Endpoint.SEND_MESSAGE.endpoint,

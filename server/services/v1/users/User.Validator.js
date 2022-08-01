@@ -23,6 +23,7 @@ const validateEmail = ()=>{
     ]
 }
 
+
 const validateResetPassword = ()=>{
     return[
         body(Constants.PostingParams.PASSWORD).isLength({min:6}),
@@ -30,7 +31,13 @@ const validateResetPassword = ()=>{
     ]
 }
 
+const validateSearchUser = ()=>{
+    return[
+        body(Constants.PostingParams.KEY).exists({checkNull:true, checkFalsy:true}).withMessage('Invalid value'),
+    ]
+}
+
 
 module.exports = {
-    validateCreateUser, validateLoginUser, validateEmail, validateResetPassword,
+    validateCreateUser, validateLoginUser, validateEmail, validateResetPassword, validateSearchUser
 }

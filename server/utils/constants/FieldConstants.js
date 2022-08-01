@@ -11,4 +11,5 @@ module.exports ={
     USERS:"users",
     GROUPADMIN:"groupadmin",
     MESSAGE_ID:"message_id",
+    KEY:"key",
 }

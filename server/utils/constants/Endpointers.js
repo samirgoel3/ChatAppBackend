@@ -40,6 +40,16 @@ module.exports = {
         url: Config.app.base_url + "api/" + Config.app.api_version + "/user/reset-password",
         description: "This api is user for email exist in DB or not"
     },
+    SEARCH_USER: {
+        name: "Search Users",
+        endpoint: "/search",
+        posting_script: false,
+        response: false,
+        request_type: "POST",
+        platform_type: "Mobile App",
+        url: Config.app.base_url + "api/" + Config.app.api_version + "/user/search",
+        description: "This api will search user according to the applied regex"
+    },
     CREATE_ONE_ONE_CHAT: {
         name: "Create One to One Chat",
         endpoint: "/create-one-one-chat",
@@ -81,14 +91,24 @@ module.exports = {
         description: "This api will Edit chat group but admin is capable to edit the group here"
     },
     GET_ALL_CHATS_WITH_UNREAD_MESSAGE: {
-        name: "Edit Group Chat",
+        name: "Get All chats with unread message",
         endpoint: "/getChatByUnreadMessage",
         posting_script: false,
         response: false,
-        request_type: "POST",
+        request_type: "GET",
         platform_type: "Mobile App",
         url: Config.app.base_url + "api/" + Config.app.api_version + "/chat/getChatByUnreadMessage",
-        description: "This api will return all groups in which a particular user has some unready messages"
+        description: "This api will return all chats in which a particular user has some unready messages"
+    },
+    GET_ALL_CHATS_WITH_READ_MESSAGE: {
+        name: "Get All chats with read message",
+        endpoint: "/getChatByreadMessage",
+        posting_script: false,
+        response: false,
+        request_type: "GET",
+        platform_type: "Mobile App",
+        url: Config.app.base_url + "api/" + Config.app.api_version + "/chat/getChatByreadMessage",
+        description: "This api will return all chats in which all messages are set as read"
     },
     SEND_MESSAGE: {
         name: "Send Message",

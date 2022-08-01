@@ -138,7 +138,24 @@ resetPassword = async (req, res) => {
 
 
 
+searchUsers = async (req, res) => {
+    try {
+        let data = await UserModel.find({username:{$regex: req.body.key, $options: 'i' }}).select('-date -createdAt -updatedAt -__v -token')
+        if(data.length > 0){
+            successResponse("" + Endpoint.SEARCH_USER.endpoint, "Users found successfully", data, 200, req, res);
+        }else{
+            failureResponse("" + Endpoint.SEARCH_USER.endpoint, "No Users Found", [], 200, req, res);
+        }
+        
+
+    } catch (e) {
+        return exceptionResponse("" + Endpoint.SEARCH_USER.endpoint, "Exception Occurs", e.message, 200, req, res)
+    }
+}
 
 
 
-module.exports = { create, login, verifyEmail, resetPassword }
+
+
+
+module.exports = { create, login, verifyEmail, resetPassword, searchUsers }

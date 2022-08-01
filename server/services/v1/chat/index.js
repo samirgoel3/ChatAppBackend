@@ -119,8 +119,58 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
 }
 
 
+getAllChatsWithReadMessages = async(req, res)=>{
+    try{
+        let{user_id} = req.query
+        
+        let chats = await ModelChat.find({ users: user_id}).select('_id') // finding chat room of a user
+        
+        // from above chats filtering out message that is not ready by user
+        let unreadMessages = await ModelMessages.find({chat:{$in:chats}, readby:{$in:user_id}})
+        .select('content -_id sender createdAt chat')
+        .populate('chat', 'chatname isgroupchat') 
+        .populate('sender', 'username')
 
-module.exports = { createOneToOneChat, createChatGroup, getChatGroups, editChatGroup, getAllChatsWithUnreadMessages }
+        // separating out element according to required JSON
+        var GroupChats = [], OneToOneChats=[];
+        unreadMessages.forEach((el)=>{
+            if(el.chat.isgroupchat){
+                let indexOfChat = GroupChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
+                console.log("index on insider "+indexOfChat)
+                if(indexOfChat != -1){
+                    GroupChats[indexOfChat].messages.push({content:el.content, sender:el.sender})
+                    }
+                else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname, messages:[{content:el.content, sender:el.sender}]}) } 
+                }
+            else{
+                let indexOfChat = OneToOneChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
+                if(indexOfChat != -1){
+                    OneToOneChats[indexOfChat].messages.push({content:el.content, sender:el.sender})
+                }
+                else{
+                    OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.chatname, messages:[{content:el.content, sender:el.sender}]})
+                }
+            }
+        })
+
+
+        let dataToSend = {
+            group_chat:GroupChats,
+            one_to_one_chat:OneToOneChats
+        }
+        if(GroupChats.length == 0 && OneToOneChats.length == 0 ){
+            ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "No Chats Found",[],200, req, res);
+        }else{
+            ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Recent messages found ",dataToSend,200, req, res);
+        }
+    }catch(e){
+        ResponseHandler.exceptionResponse("" + Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Exception Occurs ---->>>", e.message, 200, req, res)
+    }
+}
+
+
+
+module.exports = { createOneToOneChat, createChatGroup, getChatGroups, editChatGroup, getAllChatsWithUnreadMessages, getAllChatsWithReadMessages }
 
 
 // if (req.body.id) {

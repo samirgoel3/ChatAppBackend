@@ -4,7 +4,7 @@ const Constants = require('../../../utils/constants')
 const validateOnToOneChat = ()=>{
     return [
         body(Constants.PostingParams.CONTENT).exists({checkNull:true, checkFalsy:true}).withMessage("Value missing"),
-        body(Constants.PostingParams.CHAT).isMongoId,
+        body(Constants.PostingParams.CHAT).isMongoId(),
     ]
 }
 const validateMarkMessage = ()=>{
