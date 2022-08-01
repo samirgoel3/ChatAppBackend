@@ -68,6 +68,7 @@ create = async (req, res) => {
         createdUser['token'] = token;
 
         let ObjectToReturn = {
+            _id:createdUser._id,
             username: createdUser.username,
             email: createdUser.email,
             image: createdUser.image,
