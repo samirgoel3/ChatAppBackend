@@ -65,7 +65,7 @@ module.exports = {
         endpoint: "/chat-groups",
         posting_script: false,
         response: false,
-        request_type: "POST",
+        request_type: "GET",
         platform_type: "Mobile App",
         url: Config.app.base_url + "api/" + Config.app.api_version + "/chat/chat-groups",
         description: "This api will return all groups of chat for a particulat user"

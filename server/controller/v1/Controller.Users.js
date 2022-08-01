@@ -2,10 +2,8 @@ const express = require('express');
 const router = express.Router();
 const UserService  = require('../../services/v1/users')
 const UserValidator = require('../../services/v1/users/User.Validator')
-const AuthGuard = require('../../middlewares/authGaurd')
 const Constants = require('../../utils/constants')
 const {throwValidationErrorResponse} = require('../../utils/response-handlers')
-const {authenticateClientToken} = require('../../middlewares/authGaurd')
 
 
     router.post(Constants.EndPoints.CREATE_USER.endpoint,

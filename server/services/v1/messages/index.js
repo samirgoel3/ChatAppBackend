@@ -30,16 +30,16 @@ create = async (req, res) => {
 
 markMessageAsRead = async (req, res) => {
     try {
-        let { message_id, user_id } = req.body
+        let { message_id } = req.body
 
         let message = await ModelMessages.find({ _id: message_id })
 
         // check message exist
         if (message.length > 0) {
             // check user id is already exist in ready or not
-            let isUserAlreadyExist = message[0].readby.some((el) => { return el == user_id })
+            let isUserAlreadyExist = message[0].readby.some((el) => { return el == req.user_id })
             if (!isUserAlreadyExist) {
-                let result = await ModelMessages.findByIdAndUpdate({ _id: message_id }, { $push: { readby: user_id } })
+                let result = await ModelMessages.findByIdAndUpdate({ _id: message_id }, { $push: { readby: req.user_id } })
                 if (result) {
                     ResponseHandler.successResponse("" + Endpoint.MARK_MESSAGE_AS_READ.name, "Message marked as read successfully", [], 200, req, res)
                 }
