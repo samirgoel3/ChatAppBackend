@@ -5,6 +5,7 @@ const ModelMessages = require('../../../models/model.message')
 const { forEach } = require('lodash')
 const e = require('cors')
 const { populate } = require('../../../models/model.chat')
+const {faker} = require('@faker-js/faker')
 
 
 createOneToOneChat = async (req, res) => {
@@ -79,7 +80,13 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
         // from above chats filtering out message that is not ready by user
         let unreadMessages = await ModelMessages.find({chat:{$in:chats}, readby:{$nin:user_id}})
         .select('content -_id sender createdAt chat')
-        .populate('chat', 'chatname isgroupchat') 
+        .populate([{
+            path:'chat',
+            populate:{
+                path:'users',
+                select:'username image'
+            }
+        }])  
         .populate('sender', 'username')
 
         // separating out element according to required JSON
@@ -89,17 +96,18 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
                 let indexOfChat = GroupChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
                 console.log("index on insider "+indexOfChat)
                 if(indexOfChat != -1){
-                    GroupChats[indexOfChat].messages.push({content:el.content, sender:el.sender})
+                    GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt}
                     }
-                else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname, messages:[{content:el.content, sender:el.sender}]}) } 
+                else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname,chaticon:faker.image.business(), last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt}}) } 
                 }
             else{
                 let indexOfChat = OneToOneChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
                 if(indexOfChat != -1){
-                    OneToOneChats[indexOfChat].messages.push({content:el.content, sender:el.sender})
+                    OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt}
                 }
                 else{
-                    OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.chatname, messages:[{content:el.content, sender:el.sender}]})
+                    let secondUserIndex =   el.chat.users[0]._id == user_id ? 1 : 0;  
+                    OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.users[secondUserIndex].username, chaticon:el.chat.users[secondUserIndex].image, last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt}})
                 }
             }
         })
@@ -149,7 +157,7 @@ getAllChatsWithReadMessages = async(req, res)=>{
                 if(indexOfChat != -1){
                     GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt}
                     }
-                else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname, last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt}}) } 
+                else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname,chaticon:faker.image.business(), last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt}}) } 
                 }
             else{
                 let indexOfChat = OneToOneChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
@@ -157,7 +165,6 @@ getAllChatsWithReadMessages = async(req, res)=>{
                     OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt}
                 }
                 else{
-
                     let secondUserIndex =   el.chat.users[0]._id == user_id ? 1 : 0;  
                     OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.users[secondUserIndex].username, chaticon:el.chat.users[secondUserIndex].image, last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt}})
                 }
