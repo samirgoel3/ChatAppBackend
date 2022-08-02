@@ -161,7 +161,7 @@ getAllChatsWithReadMessages = async(req, res)=>{
         if(GroupChats.length == 0 && OneToOneChats.length == 0 ){
             ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "No Chats Found",[],200, req, res);
         }else{
-            ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Recent messages found ",dataToSend,200, req, res);
+            ResponseHandler.failureResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Recent messages found ",{},200, req, res);
         }
     }catch(e){
         ResponseHandler.exceptionResponse("" + Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Exception Occurs ---->>>", e.message, 200, req, res)
