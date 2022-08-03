@@ -88,6 +88,7 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
             }
         }])  
         .populate('sender', 'username image')
+        .populate('readby','username image')
 
         // separating out element according to required JSON
         var GroupChats = [], OneToOneChats=[];
@@ -147,6 +148,7 @@ getAllChatsWithReadMessages = async(req, res)=>{
             }
         }]) 
         .populate('sender', 'username image')
+        .populate('readby','username image')
 
         // separating out element according to required JSON
         var GroupChats = [], OneToOneChats=[];

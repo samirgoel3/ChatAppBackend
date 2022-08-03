@@ -62,7 +62,7 @@ markMessageAsRead = async (req, res) => {
 getAllMessageByChatId = async (req, res) => {
     try {
         let {chatid} = req.query
-        let result = await ModelMessages.find({ chat: chatid }).select('-updatedAt -__v -chat').populate('sender', 'username image')
+        let result = await ModelMessages.find({ chat: chatid }).select('-updatedAt -__v -chat').populate('sender', 'username image').populate('readby','username image')
         if (result.length > 0) {
             ResponseHandler.successResponse("" + Endpoint.GET_ALL_MESSAGE_OF_CHAT.name, "chat fetched successfully", result, 200, req, res)
         }
