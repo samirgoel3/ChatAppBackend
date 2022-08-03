@@ -79,7 +79,7 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
         
         // from above chats filtering out message that is not ready by user
         let unreadMessages = await ModelMessages.find({chat:{$in:chats}, readby:{$nin:user_id}})
-        .select('content -_id sender createdAt chat')
+        .select('content sender createdAt chat readby')
         .populate([{
             path:'chat',
             populate:{
@@ -87,7 +87,7 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
                 select:'username image'
             }
         }])  
-        .populate('sender', 'username')
+        .populate('sender', 'username image')
 
         // separating out element according to required JSON
         var GroupChats = [], OneToOneChats=[];
@@ -96,18 +96,18 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
                 let indexOfChat = GroupChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
                 console.log("index on insider "+indexOfChat)
                 if(indexOfChat != -1){
-                    GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt}
+                    GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
                     }
-                else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname,chaticon:faker.image.business(), last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt}}) } 
+                else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname,chaticon:faker.image.business(), last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}}) } 
                 }
             else{
                 let indexOfChat = OneToOneChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
                 if(indexOfChat != -1){
-                    OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt}
+                    OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
                 }
                 else{
                     let secondUserIndex =   el.chat.users[0]._id == user_id ? 1 : 0;  
-                    OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.users[secondUserIndex].username, chaticon:el.chat.users[secondUserIndex].image, last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt}})
+                    OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.users[secondUserIndex].username, chaticon:el.chat.users[secondUserIndex].image, last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}})
                 }
             }
         })
@@ -138,7 +138,7 @@ getAllChatsWithReadMessages = async(req, res)=>{
         
         // from above chats filtering out message that is not ready by user
         let unreadMessages = await ModelMessages.find({chat:{$in:chats}, readby:{$in:user_id}})
-        .select('content -_id sender createdAt chat')
+        .select('content sender createdAt chat readby')
         .populate([{
             path:'chat',
             populate:{
@@ -155,18 +155,18 @@ getAllChatsWithReadMessages = async(req, res)=>{
                 let indexOfChat = GroupChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
                 console.log("index on insider "+indexOfChat)
                 if(indexOfChat != -1){
-                    GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt}
+                    GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
                     }
-                else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname,chaticon:faker.image.business(), last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt}}) } 
+                else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname,chaticon:faker.image.business(), last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}}) } 
                 }
             else{
                 let indexOfChat = OneToOneChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
                 if(indexOfChat != -1){
-                    OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt}
+                    OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
                 }
                 else{
                     let secondUserIndex =   el.chat.users[0]._id == user_id ? 1 : 0;  
-                    OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.users[secondUserIndex].username, chaticon:el.chat.users[secondUserIndex].image, last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt}})
+                    OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.users[secondUserIndex].username, chaticon:el.chat.users[secondUserIndex].image, last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}})
                 }
             }
         })
