@@ -146,7 +146,7 @@ getAllChatsWithReadMessages = async(req, res)=>{
                 select:'username image'
             }
         }]) 
-        .populate('sender', 'username')
+        .populate('sender', 'username image')
 
         // separating out element according to required JSON
         var GroupChats = [], OneToOneChats=[];
