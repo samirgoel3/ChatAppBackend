@@ -12,17 +12,21 @@ createOneToOneChat = async (req, res) => {
     try {
         const {chatname, users,groupadmin } = req.body
 
-        const result = await ModelChat.updateOne(
-            {groupadmin:{$in:groupadmin}}, 
-            {chatname, users,groupadmin },
-            { upsert: true, new:true }, // Make this update into an upsert
-          );
-          if(result.modifiedCount == 0 ){
-            ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"Chat room was created successfully",{chat_id:result.upsertedId}, 200, req, res);
-          }else{
-            let CHATID = await ModelChat.find({groupadmin:groupadmin}).select('_id')
-            ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"Chat room was already exist so updated successfully",{chat_id:CHATID[0]._id}, 200, req, res);
-          }
+
+        const chatWithReqGroupAdmins = await ModelChat.find({groupadmin:{$all:groupadmin}})
+        if(chatWithReqGroupAdmins.length == 0 ){
+            const result = await ModelChat.create({chatname, users,groupadmin })
+            if(result){
+                ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"One to one chat crtearted successfully",{chat_id:result._id}, 200, req, res);
+            }
+            else{
+                ResponseHandler.failureResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"Failed top create one to one chat",result, 200, req, res);
+            }
+        }
+        else{
+            ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"It seems like one to one chat was already create with these users",{chat_id:chatWithReqGroupAdmins[0]._id}, 200, req, res);
+        }
+        
         
     } catch (e) {
         ResponseHandler.exceptionResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name, "Exception Occurs ---->>>", e.message, 200, req, res)
