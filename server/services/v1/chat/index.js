@@ -13,7 +13,7 @@ createOneToOneChat = async (req, res) => {
         const {chatname, users,groupadmin } = req.body
 
         const result = await ModelChat.updateOne(
-            {groupadmin}, // find group admin exist or not
+            {groupadmin:{$in:groupadmin}}, 
             {chatname, users,groupadmin },
             { upsert: true, new:true }, // Make this update into an upsert
           );

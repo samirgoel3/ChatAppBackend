@@ -9,6 +9,7 @@ module.exports ={
     CHAT:"chat",
     CHAT_NAME:"chatname",
     USERS:"users",
+    USER_ID_TO_CHAT:"user_id_to_chat",
     GROUPADMIN:"groupadmin",
     MESSAGE_ID:"message_id",
     KEY:"key",
