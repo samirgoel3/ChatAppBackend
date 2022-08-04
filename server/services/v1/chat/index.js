@@ -123,7 +123,7 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
             one_to_one_chat:OneToOneChats
         }
         if(GroupChats.length == 0 && OneToOneChats.length == 0 ){
-            ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "No Unread Messages Found",[],200, req, res);
+            ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "No Unread Messages Found",{group_chat:[],one_to_one_chat:[] },200, req, res);
         }else{
             ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Messages found as unread ",dataToSend,200, req, res);
         }
@@ -183,7 +183,7 @@ getAllChatsWithReadMessages = async(req, res)=>{
             one_to_one_chat:OneToOneChats
         }
         if(GroupChats.length == 0 && OneToOneChats.length == 0 ){
-            ResponseHandler.failureResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "No Chats Found",{},200, req, res);
+            ResponseHandler.failureResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "No Chats Found",{group_chat:[], one_to_one_chat:[]},200, req, res);
         }else{
             ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Recent messages found ",dataToSend,200, req, res);
         }
