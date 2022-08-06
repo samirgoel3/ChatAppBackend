@@ -99,20 +99,34 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
         unreadMessages.forEach((el)=>{
             if(el.chat.isgroupchat){
                 let indexOfChat = GroupChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
-                console.log("index on insider "+indexOfChat)
                 if(indexOfChat != -1){
                     GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
-                    }
-                else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname,chaticon:faker.image.business(), last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}}) } 
+                    GroupChats[indexOfChat].unread_message_count = GroupChats[indexOfChat].unread_message_count + 1;
+                }
+                else{ GroupChats.push(
+                    {chat_id:el.chat._id,
+                         chatname:el.chat.chatname,
+                          chaticon:faker.image.business(),
+                           last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby},
+                           unread_message_count:1
+                        }) } 
                 }
             else{
                 let indexOfChat = OneToOneChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
                 if(indexOfChat != -1){
                     OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
+                    OneToOneChats[indexOfChat].unread_message_count = OneToOneChats[indexOfChat].unread_message_count + 1;
                 }
                 else{
                     let secondUserIndex =   el.chat.users[0]._id == user_id ? 1 : 0;  
-                    OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.users[secondUserIndex].username, chaticon:el.chat.users[secondUserIndex].image, last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}})
+                    OneToOneChats.push(
+                        {chat_id:el.chat._id,
+                             chatname:el.chat.users[secondUserIndex].username,
+                              chaticon:el.chat.users[secondUserIndex].image,
+                               last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby},
+                               unread_message_count:1
+                            
+                            })
                 }
             }
         })
@@ -259,3 +273,61 @@ module.exports = { createOneToOneChat, createChatGroup, getChatGroups, editChatG
 //         "This is create update api ",
 //         createdUser,
 //         200, req, res)}
+
+//// getAllChatsWithUnreadMessages(){
+
+    // try{
+    //     let{user_id} = req.query
+        
+    //     let chats = await ModelChat.find({ users: user_id}).select('_id') // finding chat room of a user
+        
+    //     // from above chats filtering out message that is not ready by user
+    //     let unreadMessages = await ModelMessages.find({chat:{$in:chats}, readby:{$nin:user_id}})
+    //     .select('content sender createdAt chat readby')
+    //     .populate([{
+    //         path:'chat',
+    //         populate:{
+    //             path:'users',
+    //             select:'username image'
+    //         }
+    //     }])  
+    //     .populate('sender', 'username image')
+    //     .populate('readby','username image')
+
+    //     // separating out element according to required JSON
+    //     var GroupChats = [], OneToOneChats=[];
+    //     unreadMessages.forEach((el)=>{
+    //         if(el.chat.isgroupchat){
+    //             let indexOfChat = GroupChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
+    //             console.log("index on insider "+indexOfChat)
+    //             if(indexOfChat != -1){
+    //                 GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
+    //                 }
+    //             else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname,chaticon:faker.image.business(), last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}}) } 
+    //             }
+    //         else{
+    //             let indexOfChat = OneToOneChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
+    //             if(indexOfChat != -1){
+    //                 OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
+    //             }
+    //             else{
+    //                 let secondUserIndex =   el.chat.users[0]._id == user_id ? 1 : 0;  
+    //                 OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.users[secondUserIndex].username, chaticon:el.chat.users[secondUserIndex].image, last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}})
+    //             }
+    //         }
+    //     })
+
+
+    //     let dataToSend = {
+    //         group_chat:GroupChats,
+    //         one_to_one_chat:OneToOneChats
+    //     }
+    //     if(GroupChats.length == 0 && OneToOneChats.length == 0 ){
+    //         ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "No Unread Messages Found",{group_chat:[],one_to_one_chat:[] },200, req, res);
+    //     }else{
+    //         ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Messages found as unread ",dataToSend,200, req, res);
+    //     }
+    // }catch(e){
+    //     ResponseHandler.exceptionResponse("" + Endpoint.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.name, "Exception Occurs ---->>>", e.message, 200, req, res)
+    // }
+// } only last message
