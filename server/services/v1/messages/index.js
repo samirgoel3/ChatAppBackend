@@ -6,12 +6,12 @@ const ModelMessages = require('../../../models/model.message')
 create = async (req, res) => {
     try {
         let { content, chat } = req.body
-        let result = await ModelMessages.create({ sender:req.user_id, content, chat, readby: [req.user_id] })
+        let result = await (await ModelMessages.create({ sender:req.user_id, content, chat, readby: [req.user_id] })).populate('sender readby', '_id username image')
 
         if (result) {
             ResponseHandler.successResponse("" + Endpoint.SEND_MESSAGE.endpoint,
                 "Message send Successfully...",
-                [],
+                result,
                 200, req, res)
         }
         else {
