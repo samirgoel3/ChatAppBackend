@@ -64,6 +64,9 @@ create = async (req, res) => {
 
 
         let token = await JWT.sign({ user_id: createdUser._id }, Config.app.app_secret);
+        // update token in DB
+        await UserModel.findByIdAndUpdate({_id:createdUser._id}, {token:token})
+
 
         createdUser['token'] = token;
 

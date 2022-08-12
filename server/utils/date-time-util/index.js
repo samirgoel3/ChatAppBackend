@@ -1,7 +1,8 @@
 const date = require('date-and-time');
 
-const convertMongoDbTimestampToDate = (timestamp) =>{
-    return date.parse(timestamp, 'YYYY/MM/DD HH:mm:ss');
+const convertMongoDbTimestampToDate = (mongoTimestamp) =>{
+    let convertedDate = date.format(new Date(mongoTimestamp), 'hh:mm A ddd')
+    return convertedDate;
 }
 
-export default {convertMongoDbTimestampToDate}
+module.exports = {convertMongoDbTimestampToDate}

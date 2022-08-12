@@ -6,6 +6,7 @@ const { forEach } = require('lodash')
 const e = require('cors')
 const { populate } = require('../../../models/model.chat')
 const {faker} = require('@faker-js/faker')
+const Dateutil = require('../../../utils/date-time-util')
 
 
 createOneToOneChat = async (req, res) => {
@@ -13,18 +14,18 @@ createOneToOneChat = async (req, res) => {
         const {chatname, users,groupadmin } = req.body
 
 
-        const chatWithReqGroupAdmins = await ModelChat.find({groupadmin:{$all:groupadmin}})
+        const chatWithReqGroupAdmins = await ModelChat.find({groupadmin:{$all:groupadmin}}).populate('users','_id username image')
         if(chatWithReqGroupAdmins.length == 0 ){
             const result = await ModelChat.create({chatname, users,groupadmin })
             if(result){
-                ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"One to one chat crtearted successfully",{chat_id:result._id}, 200, req, res);
+                ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"One to one chat crtearted successfully",result, 200, req, res);
             }
             else{
                 ResponseHandler.failureResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"Failed top create one to one chat",result, 200, req, res);
             }
         }
         else{
-            ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"It seems like one to one chat was already create with these users",{chat_id:chatWithReqGroupAdmins[0]._id}, 200, req, res);
+            ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"It seems like one to one chat was already create with these users",chatWithReqGroupAdmins[0], 200, req, res);
         }
         
         
@@ -100,33 +101,32 @@ getAllChatsWithUnreadMessages = async(req, res)=>{
             if(el.chat.isgroupchat){
                 let indexOfChat = GroupChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
                 if(indexOfChat != -1){
-                    GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
+                    GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:Dateutil.convertMongoDbTimestampToDate(el.createdAt), _id:el._id, readby:el.readby}
                     GroupChats[indexOfChat].unread_message_count = GroupChats[indexOfChat].unread_message_count + 1;
                 }
                 else{ GroupChats.push(
                     {chat_id:el.chat._id,
-                         chatname:el.chat.chatname,
-                          chaticon:faker.image.business(),
-                           last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby},
-                           unread_message_count:1
-                        }) } 
+                     chatname:el.chat.chatname,
+                     chaticon:faker.image.business(),
+                     last_message:{content:el.content, sender:el.sender, createdAt:Dateutil.convertMongoDbTimestampToDate(el.createdAt), _id:el._id, readby:el.readby},
+                     unread_message_count:1,
+                     users:el.chat.users})} 
                 }
             else{
                 let indexOfChat = OneToOneChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
                 if(indexOfChat != -1){
-                    OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
+                    OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:Dateutil.convertMongoDbTimestampToDate(el.createdAt), _id:el._id, readby:el.readby}
                     OneToOneChats[indexOfChat].unread_message_count = OneToOneChats[indexOfChat].unread_message_count + 1;
                 }
                 else{
                     let secondUserIndex =   el.chat.users[0]._id == user_id ? 1 : 0;  
                     OneToOneChats.push(
                         {chat_id:el.chat._id,
-                             chatname:el.chat.users[secondUserIndex].username,
-                              chaticon:el.chat.users[secondUserIndex].image,
-                               last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby},
-                               unread_message_count:1
-                            
-                            })
+                         chatname:el.chat.users[secondUserIndex].username,
+                         chaticon:el.chat.users[secondUserIndex].image,
+                         last_message:{content:el.content, sender:el.sender, createdAt:Dateutil.convertMongoDbTimestampToDate(el.createdAt), _id:el._id, readby:el.readby},
+                         unread_message_count:1,
+                         users:el.chat.users})
                 }
             }
         })
@@ -152,11 +152,11 @@ getAllChatsWithReadMessages = async(req, res)=>{
         let{user_id} = req.query
         
         // finding chat room of a user in which he exist
-        let chats = await ModelChat.find({ users: user_id}).select('_id')
+        let chats = await ModelChat.find({ users: user_id}).select('_id users')
        
         
         // from above chats filtering out message that is not ready by user
-        let unreadMessages = await ModelMessages.find({chat:{$in:chats}, readby:{$in:user_id}})
+        let readMessages = await ModelMessages.find({chat:{$in:chats}, readby:{$in:user_id}})
         .select('content sender createdAt chat readby')
         .populate([{
             path:'chat',
@@ -170,23 +170,45 @@ getAllChatsWithReadMessages = async(req, res)=>{
 
         // separating out element according to required JSON
         var GroupChats = [], OneToOneChats=[];
-        unreadMessages.forEach((el)=>{
+        readMessages.forEach((el)=>{
             if(el.chat.isgroupchat){
                 let indexOfChat = GroupChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
                 console.log("index on insider "+indexOfChat)
                 if(indexOfChat != -1){
-                    GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
+                    GroupChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:Dateutil.convertMongoDbTimestampToDate(el.createdAt), _id:el._id, readby:el.readby}
                     }
-                else{ GroupChats.push({chat_id:el.chat._id, chatname:el.chat.chatname,chaticon:faker.image.business(), last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}}) } 
+                else{ GroupChats.push(
+                    {chat_id:el.chat._id,
+                     chatname:el.chat.chatname,
+                     chaticon:faker.image.business(), 
+                     users:el.chat.users,
+                     last_message:{
+                        content:el.content, 
+                        sender:el.sender, 
+                        createdAt:Dateutil.convertMongoDbTimestampToDate(el.createdAt), 
+                        _id:el._id, 
+                        readby:el.readby
+                    }}) } 
                 }
             else{
                 let indexOfChat = OneToOneChats.findIndex((e)=>{ return  e.chat_id == el.chat._id })
                 if(indexOfChat != -1){
-                    OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}
+                    OneToOneChats[indexOfChat].last_message = {content:el.content, sender:el.sender, createdAt:Dateutil.convertMongoDbTimestampToDate(el.createdAt), _id:el._id, readby:el.readby}
                 }
                 else{
                     let secondUserIndex =   el.chat.users[0]._id == user_id ? 1 : 0;  
-                    OneToOneChats.push({chat_id:el.chat._id, chatname:el.chat.users[secondUserIndex].username, chaticon:el.chat.users[secondUserIndex].image, last_message:{content:el.content, sender:el.sender, createdAt:el.createdAt, _id:el._id, readby:el.readby}})
+                    OneToOneChats.push(
+                        {
+                            chat_id:el.chat._id,
+                            chatname:el.chat.users[secondUserIndex].username,
+                            chaticon:el.chat.users[secondUserIndex].image,
+                            last_message:{content:el.content,
+                                          sender:el.sender,
+                                          createdAt:Dateutil.convertMongoDbTimestampToDate(el.createdAt),
+                                          _id:el._id,
+                                          readby:el.readby},
+                            users:el.chat.users
+                        })
                 }
             }
         })

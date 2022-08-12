@@ -24,13 +24,13 @@ const authenticateClientToken = async (req, res, next) => {
         }
         else {
             return res.status(200).json({
-                result: 0,
+                result: 3,
                 "errors": [{ "msg": "It seems like you have logged in in another device" }, { "msg": "Session Expired" }]
             });
         }
     } catch (e) {
         return res.status(200).json({
-            result: 0,
+            result: 3,
             "errors": [{ "msg": "Invalid Token" }]
         });
     }
