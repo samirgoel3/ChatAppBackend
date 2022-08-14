@@ -50,6 +50,16 @@ module.exports = {
         url: Config.app.base_url + "api/" + Config.app.api_version + "/user/search",
         description: "This api will search user according to the applied regex"
     },
+    ALL_USERS: {
+        name: "All Users",
+        endpoint: "/all",
+        posting_script: false,
+        response: false,
+        request_type: "POST",
+        platform_type: "Mobile App",
+        url: Config.app.base_url + "api/" + Config.app.api_version + "/user/all",
+        description: "This api will fetch all users created in DB"
+    },
     CREATE_ONE_ONE_CHAT: {
         name: "Create One to One Chat",
         endpoint: "/create-one-one-chat",

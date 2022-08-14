@@ -46,7 +46,7 @@ createChatGroup = async (req, res)=>{
 
 getChatGroups = async (req, res)=>{
     try{
-        const result = await ModelChat.find({users:req.user_id, isgroupchat:true}).select('chatname -_id groupadmin');
+        const result = await ModelChat.find({users:req.user_id, isgroupchat:true}).select('-__v -updatedAt').populate('users', '_id username image email developer').populate('groupadmin', '_id username image email developer');
         if(result.length > 0){
             ResponseHandler.successResponse(""+ Endpoint.CREATE_GROUP_CHAT.name, "Chat Group is Fetched Successfully",result,200, req, res);
         }

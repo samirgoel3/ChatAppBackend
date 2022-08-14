@@ -8,7 +8,8 @@ const { faker } = require('@faker-js/faker');
 const axios = require('axios');
 var FormData = require('form-data');
 var fs = require('fs');
-const fsPromises = require('fs/promises')
+const fsPromises = require('fs/promises');
+const modelUser = require('../../../models/model.user');
 
 
 create = async (req, res) => {
@@ -140,7 +141,6 @@ resetPassword = async (req, res) => {
 }
 
 
-
 searchUsers = async (req, res) => {
     try {
         let data = await UserModel.find({username:{$regex: req.body.key, $options: 'i' }}).select('-date -createdAt -updatedAt -__v -token')
@@ -149,10 +149,17 @@ searchUsers = async (req, res) => {
         }else{
             failureResponse("" + Endpoint.SEARCH_USER.endpoint, "No Users Found", [], 200, req, res);
         }
-        
-
     } catch (e) {
         return exceptionResponse("" + Endpoint.SEARCH_USER.endpoint, "Exception Occurs", e.message, 200, req, res)
+    }
+}
+
+allUsers = async (req, res)=>{
+    try{
+        let usersData = await modelUser.find().select('_id username image email developer createdAt')
+        successResponse("" + Endpoint.ALL_USERS.endpoint, "Users fetched successfully", usersData, 200, req, res);
+    }catch(e){
+        return exceptionResponse("" + Endpoint.ALL_USERS.endpoint, "Exception Occurs", e.message, 200, req, res)  
     }
 }
 
@@ -160,5 +167,4 @@ searchUsers = async (req, res) => {
 
 
 
-
-module.exports = { create, login, verifyEmail, resetPassword, searchUsers }
+module.exports = { create, login, verifyEmail, resetPassword, searchUsers, allUsers }

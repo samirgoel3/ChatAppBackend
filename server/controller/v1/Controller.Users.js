@@ -18,6 +18,8 @@ const { authenticateClientToken } = require('../../middlewares/authGaurd')
     router.post(Constants.EndPoints.RESET_PASSWORD.endpoint, UserValidator.validateResetPassword(), throwValidationErrorResponse , UserService.resetPassword);
 
     router.post(Constants.EndPoints.SEARCH_USER.endpoint, authenticateClientToken, UserValidator.validateSearchUser(), throwValidationErrorResponse , UserService.searchUsers);
+    
+    router.post(Constants.EndPoints.ALL_USERS.endpoint, authenticateClientToken , UserService.allUsers);
 
 
 
