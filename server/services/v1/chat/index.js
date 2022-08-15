@@ -2,9 +2,6 @@ const ResponseHandler = require('../../../utils/response-handlers')
 const Endpoint = require('../../../utils/constants/Endpointers')
 const ModelChat = require('../../../models/model.chat')
 const ModelMessages = require('../../../models/model.message')
-const { forEach } = require('lodash')
-const e = require('cors')
-const { populate } = require('../../../models/model.chat')
 const {faker} = require('@faker-js/faker')
 const Dateutil = require('../../../utils/date-time-util')
 
@@ -46,7 +43,10 @@ createChatGroup = async (req, res)=>{
 
 getChatGroups = async (req, res)=>{
     try{
-        const result = await ModelChat.find({users:req.user_id, isgroupchat:true}).select('-__v -updatedAt').populate('users', '_id username image email developer').populate('groupadmin', '_id username image email developer');
+        const result = await ModelChat.find({users:req.user_id, isgroupchat:true}).select('-__v -updatedAt')
+        .populate('users', '_id username image email developer')
+        .populate('groupadmin', '_id username image email developer');
+
         if(result.length > 0){
             ResponseHandler.successResponse(""+ Endpoint.CREATE_GROUP_CHAT.name, "Chat Group is Fetched Successfully",result,200, req, res);
         }
