@@ -37,7 +37,9 @@ router.get(Constants.EndPoints.GET_ALL_CHATS_WITH_UNREAD_MESSAGE.endpoint,
 router.get(Constants.EndPoints.GET_ALL_CHATS_WITH_READ_MESSAGE.endpoint,
     ChatService.getAllChatsWithReadMessages);
 
-
+router.get(Constants.EndPoints.GET_ALL_CHATS_BY_USER_ID.endpoint,
+    authenticateClientToken,
+    ChatService.getAllChatsByUserId);
 
 
 module.exports = router;

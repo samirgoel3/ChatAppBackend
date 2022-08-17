@@ -228,9 +228,22 @@ getAllChatsWithReadMessages = async(req, res)=>{
     }
 }
 
+getAllChatsByUserId = async (req, res) =>{
+    try{
+      let chats = await ModelChat.find({users:{$in:[req.user_id]}}).select('-updatedAt -__v').populate('users groupadmin','username _id image')
+      if(chats.length != 0){
+        ResponseHandler.successResponse(""+ Endpoint.GET_ALL_CHATS_BY_USER_ID.name, "Chats Found Successfully ",chats,200, req, res);
+      }else{
+        ResponseHandler.failureResponse(""+ Endpoint.GET_ALL_CHATS_BY_USER_ID.name, "No Chats found",[],200, req, res);
+      }
+    
+    }catch(e){
+        ResponseHandler.exceptionResponse("" + Endpoint.GET_ALL_CHATS_BY_USER_ID.name, "Exception Occurs ---->>>", e.message, 200, req, res)
+    }
+}
 
 
-module.exports = { createOneToOneChat, createChatGroup, getChatGroups, editChatGroup, getAllChatsWithUnreadMessages, getAllChatsWithReadMessages }
+module.exports = { createOneToOneChat, createChatGroup, getChatGroups, editChatGroup, getAllChatsWithUnreadMessages, getAllChatsWithReadMessages, getAllChatsByUserId }
 
 
 // if (req.body.id) {

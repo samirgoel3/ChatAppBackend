@@ -109,6 +109,15 @@ module.exports = {
         platform_type: "Mobile App",
         url: Config.app.base_url + "api/" + Config.app.api_version + "/chat/getChatByUnreadMessage",
         description: "This api will return all chats in which a particular user has some unready messages"
+    },GET_ALL_CHATS_BY_USER_ID: {
+        name: "Get All chats according to user ID",
+        endpoint: "/getAllChats",
+        posting_script: false,
+        response: false,
+        request_type: "GET",
+        platform_type: "Mobile App",
+        url: Config.app.base_url + "api/" + Config.app.api_version + "/chat/getChatByUnreadMessage",
+        description: "This api will return all chat without messages weather it is group type or not"
     },
     GET_ALL_CHATS_WITH_READ_MESSAGE: {
         name: "Get All chats with read message",
