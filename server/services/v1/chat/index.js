@@ -11,9 +11,9 @@ createOneToOneChat = async (req, res) => {
         const {chatname, users,groupadmin } = req.body
 
 
-        const chatWithReqGroupAdmins = await ModelChat.find({groupadmin:{$all:groupadmin}}).populate('users','_id username image')
+        const chatWithReqGroupAdmins = await ModelChat.find({identifier:users.sort().join()}).populate('users','_id username image')
         if(chatWithReqGroupAdmins.length == 0 ){
-            const result = await ModelChat.create({chatname, users,groupadmin })
+            const result = await ModelChat.create({chatname, users,groupadmin, identifier:users.sort().join() })
             if(result){
                 ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"One to one chat crtearted successfully",result, 200, req, res);
             }
@@ -22,7 +22,7 @@ createOneToOneChat = async (req, res) => {
             }
         }
         else{
-            ResponseHandler.successResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"It seems like one to one chat was already create with these users",chatWithReqGroupAdmins[0], 200, req, res);
+            ResponseHandler.failureResponse("" + Endpoint.CREATE_ONE_ONE_CHAT.name,"It seems like one to one chat was already create with these users",chatWithReqGroupAdmins[0], 200, req, res);
         }
         
         
@@ -34,7 +34,7 @@ createOneToOneChat = async (req, res) => {
 createChatGroup = async (req, res)=>{
     try{
         const {chatname, users,groupadmin } = req.body
-        const result = await ModelChat.create({chatname, users,groupadmin, isgroupchat:true});
+        const result = await (await ModelChat.create({chatname, users,groupadmin, isgroupchat:true})).populate('users groupadmin', '_id username image');
         ResponseHandler.successResponse(""+ Endpoint.CREATE_GROUP_CHAT.name, "Chat Group is Created Successfully",result,200, req, res);
     }catch(e){
         ResponseHandler.exceptionResponse("" + Endpoint.CREATE_GROUP_CHAT.name, "Exception Occurs ---->>>", e.message, 200, req, res)

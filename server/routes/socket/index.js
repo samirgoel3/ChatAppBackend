@@ -7,7 +7,7 @@ const initSocket = (server) => {
     socketIO = new Server(server, {
         pingTimeout: 60000,
         cors: {
-            origin: 'http://localhost:5000',
+            // origin: 'http://192.168.0.109:5000',
             methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
             allowedHeaders: ["Origin', 'x-access-token', 'Content-Type', 'Accept"],
         }
@@ -19,6 +19,10 @@ const initSocket = (server) => {
 
 
         socket.on("disconnect", (reason) => Listener.onDisconnection(socket, reason));
+
+        socket.on("TESTER", (data)=>{
+            console.log("******* "+JSON.stringify(data))
+        })
 
     });
 
