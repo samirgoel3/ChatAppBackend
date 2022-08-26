@@ -9,6 +9,7 @@ const userSchema = new Schema({
     developer:{type:Boolean, default:false},
     token:{type:String, require:true},
     date: { type: Date, default: Date.now },
+    socket_id:{ type: String, default:"NA"}
 }, {timestamps: true});
 
 

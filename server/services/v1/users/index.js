@@ -66,13 +66,13 @@ create = async (req, res) => {
 
         let token = await JWT.sign({ user_id: createdUser._id }, Config.app.app_secret);
         // update token in DB
-        await UserModel.findByIdAndUpdate({_id:createdUser._id}, {token:token})
+        await UserModel.findByIdAndUpdate({ _id: createdUser._id }, { token: token })
 
 
         createdUser['token'] = token;
 
         let ObjectToReturn = {
-            _id:createdUser._id,
+            _id: createdUser._id,
             username: createdUser.username,
             email: createdUser.email,
             image: createdUser.image,
@@ -91,17 +91,22 @@ create = async (req, res) => {
 
 login = async (req, res) => {
     try {
+
         let loggedInUser = await UserModel.findOne({ email: req.body.email, password: req.body.password }).select('-__v -password -date -createdAt -updatedAt')
         // user not exist in DB
         if (!loggedInUser)
             return failureResponse("" + Endpoint.LOGIN_USER.name, "User does not exist ", [], 200, req, res)
 
 
+            var socketio = req.app.get('socketio');
+            socketio.emit(""+loggedInUser.socket_id, {type:"LOGOUT", data:"It Seems that you are logged in another device."})
+    
+    
 
         let token = await JWT.sign({ user_id: loggedInUser._id }, Config.app.app_secret);
 
         // update token in DB corresponding to that user
-        await UserModel.updateOne({email:req.body.email}, {token:token})
+        await UserModel.updateOne({ email: req.body.email }, { token: token })
         loggedInUser['token'] = token;
 
         return successResponse("" + Endpoint.LOGIN_USER.name, "User Logged in successfully", loggedInUser, 200, req, res)
@@ -143,10 +148,10 @@ resetPassword = async (req, res) => {
 
 searchUsers = async (req, res) => {
     try {
-        let data = await UserModel.find({username:{$regex: req.body.key, $options: 'i' }}).select('-date -createdAt -updatedAt -__v -token')
-        if(data.length > 0){
+        let data = await UserModel.find({ username: { $regex: req.body.key, $options: 'i' } }).select('-date -createdAt -updatedAt -__v -token')
+        if (data.length > 0) {
             successResponse("" + Endpoint.SEARCH_USER.endpoint, "Users found successfully", data, 200, req, res);
-        }else{
+        } else {
             failureResponse("" + Endpoint.SEARCH_USER.endpoint, "No Users Found", [], 200, req, res);
         }
     } catch (e) {
@@ -154,12 +159,12 @@ searchUsers = async (req, res) => {
     }
 }
 
-allUsers = async (req, res)=>{
-    try{
+allUsers = async (req, res) => {
+    try {
         let usersData = await modelUser.find().select('_id username image email developer createdAt')
         successResponse("" + Endpoint.ALL_USERS.endpoint, "Users fetched successfully", usersData, 200, req, res);
-    }catch(e){
-        return exceptionResponse("" + Endpoint.ALL_USERS.endpoint, "Exception Occurs", e.message, 200, req, res)  
+    } catch (e) {
+        return exceptionResponse("" + Endpoint.ALL_USERS.endpoint, "Exception Occurs", e.message, 200, req, res)
     }
 }
 

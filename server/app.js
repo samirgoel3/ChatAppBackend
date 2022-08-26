@@ -45,10 +45,11 @@ module.exports = function () {
             .then((res) => {  console.log('#####---> Mongo DB Connected!'); })
             .catch(err => { console.log("####----> Mongo Db not Connected" + err); });
 
-        route.initApi(ApiServerApp)
+        
         mainServer = http.createServer(ApiServerApp)
-        socketRoute.initSocket(mainServer)
-
+        let SOCKETIO = socketRoute.initSocket(mainServer)
+        ApiServerApp.set('socketio',SOCKETIO);
+        route.initApi(ApiServerApp)
 
     };
 
